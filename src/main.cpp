@@ -20,8 +20,6 @@ DEFINE_GRADIENT_PALETTE( bhw1_06_gp ) {
 
 CRGBPalette16 currentPalette = bhw1_06_gp;
 
-uint8_t paletteIndex = 0;
-
 void setup() { 
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
     FastLED.setBrightness(255);
@@ -31,6 +29,7 @@ uint8_t ls_numberOfFlashes;
 uint8_t ls_delayBetweenFlashes;
 uint8_t ls_flashLED;
 uint8_t ls_flashBrightness;
+uint8_t ls_paletteIndex = 0;
 
 // #A LIGHTNING SPARK 1
 // TODO: Last flash should fade
@@ -44,14 +43,14 @@ void lightningSpark_one() {
       ls_delayBetweenFlashes = random(x * 4, 64);
       ls_flashBrightness = random(x * 25, 255);
 
-      leds[ls_flashLED] = ColorFromPalette(currentPalette, paletteIndex, ls_flashBrightness, LINEARBLEND);
+      leds[ls_flashLED] = ColorFromPalette(currentPalette, ls_paletteIndex, ls_flashBrightness, LINEARBLEND);
       FastLED.show();
       delay(ls_delayBetweenFlashes);
       leds[ls_flashLED] = CRGB::Black;
       FastLED.show();
       delay(ls_delayBetweenFlashes);
 
-      paletteIndex += 16;
+      ls_paletteIndex += 16;
     }
 }
 
@@ -59,6 +58,7 @@ uint8_t ll_numberOfFlashes;
 uint8_t ll_delayBetweenFlashes;
 uint8_t ll_flashLED;
 uint8_t ll_flashBrightness;
+uint8_t ll_paletteIndex = 0;
 
 // #2 LIGHTNING LINE
 void lightningLine() {
@@ -74,14 +74,14 @@ void lightningLine() {
       ll_delayBetweenFlashes = random(x * 4, 64);
       ll_flashBrightness = random(x * 25, 255);
 
-      leds[ll_flashLED] = ColorFromPalette(currentPalette, paletteIndex, ll_flashBrightness, LINEARBLEND);
+      leds[ll_flashLED] = ColorFromPalette(currentPalette, ll_paletteIndex, ll_flashBrightness, LINEARBLEND);
       FastLED.show();
       delay(ll_delayBetweenFlashes);
       leds[ll_flashLED] = CRGB::Black;
       FastLED.show();
       delay(ll_delayBetweenFlashes);
 
-      paletteIndex += 16;
+      ll_paletteIndex += 16;
     }
 
     // TODO: Last flash should fade
@@ -108,7 +108,7 @@ void loop() {
 
     // #SAVE MOVING PALETTE FOR #2
 
-    // fill_palette(leds, NUM_LEDS, paletteIndex, 255 / NUM_LEDS, myPal, 255, LINEARBLEND);
+    // fill_palette(leds, NUM_LEDS, ls_paletteIndex, 255 / NUM_LEDS, myPal, 255, LINEARBLEND);
     //   FastLED.show();
 
     // EVERY_N_MILLISECONDS(32) {
