@@ -22,7 +22,7 @@ CRGBPalette16 currentPalette = bhw1_06_gp;
 
 void setup() { 
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-    FastLED.setBrightness(255);
+    FastLED.setBrightness(192);
 }
 
 uint8_t ls_numberOfFlashes;
@@ -83,7 +83,7 @@ void lightningLine() {
 
   for (int z = 0; z <= ll_numberOfFlashes; z++) {
     ll_delayBetweenFlashes = random8(z * 24);
-    ll_flashBrightness = random8(z * 36, 255);
+    ll_flashBrightness = random8(z * 32, 192);
 
     fill_palette(leds, NUM_LEDS, ll_paletteIndex, z, currentPalette, ll_flashBrightness, LINEARBLEND);
     FastLED.show();
@@ -92,12 +92,7 @@ void lightningLine() {
     fill_solid(leds, NUM_LEDS, CRGB::Black);
     FastLED.show();
     delay(ll_delayBetweenFlashes);
-  }
-
-  // fill_solid(leds, NUM_LEDS, CRGB::Black);
-  // FastLED.show();
-
-  
+  }  
 
   // Randomly select an LED
   // ll_flashLED = random8(NUM_LEDS - 1); // Lock the LED of choice
