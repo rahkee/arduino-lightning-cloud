@@ -29,12 +29,12 @@ uint8_t ls_numberOfFlashes;
 uint8_t ls_delayBetweenFlashes;
 uint8_t ls_flashLED;
 uint8_t ls_flashBrightness;
-uint8_t ls_paletteIndex = 0;
+uint8_t ls_paletteIndex;
 
 // #A LIGHTNING SPARK 1
 // TODO: Last flash should fade
-void lightningSpark_one() {
-    ls_numberOfFlashes = random8(1, 8); // Determine number of flashes
+void lightningSpark() {
+    ls_numberOfFlashes = random8(1, 4); // Determine number of flashes
     // Randomly select an LED || Group of LEDs in the strip
     ls_flashLED = random8(0, NUM_LEDS - 1); // Lock the LED of choice
 
@@ -45,80 +45,94 @@ void lightningSpark_one() {
 
       leds[ls_flashLED] = ColorFromPalette(currentPalette, ls_paletteIndex, ls_flashBrightness, LINEARBLEND);
       FastLED.show();
-      delay(ls_delayBetweenFlashes);
-      leds[ls_flashLED] = CRGB::Black;
-      FastLED.show();
+      
       delay(ls_delayBetweenFlashes);
 
-      ls_paletteIndex += 16;
+      leds[ls_flashLED] = CRGB::Black;
+      FastLED.show();
+
+      delay(ls_delayBetweenFlashes);
+
+      ls_paletteIndex += x * 10;
     }
 }
 
 uint8_t ll_numberOfFlashes;
 uint8_t ll_delayBetweenFlashes;
 uint8_t ll_flashLED;
+uint8_t ll_flashLED_length;
 uint8_t ll_flashBrightness;
-uint8_t ll_paletteIndex = 0;
+uint8_t ll_paletteIndex;
 
 // #2 LIGHTNING LINE
-void lightningLine() {
 
-  ll_numberOfFlashes = random8(2, 10); // Determine number of flashes
-
-  EVERY_N_MILLISECONDS(random16(2048, 4096)) {
-    // Randomly select an LED || Group of LEDs in the strip
-    ll_flashLED = random8(0, NUM_LEDS - 1); // Lock the LED of choice
-
-    for(int x = 0; x <= ll_numberOfFlashes; x++) {
-      // Flash a random number of times, each brighter
-      ll_delayBetweenFlashes = random(x * 4, 64);
-      ll_flashBrightness = random(x * 25, 255);
-
-      leds[ll_flashLED] = ColorFromPalette(currentPalette, ll_paletteIndex, ll_flashBrightness, LINEARBLEND);
-      FastLED.show();
-      delay(ll_delayBetweenFlashes);
-      leds[ll_flashLED] = CRGB::Black;
-      FastLED.show();
-      delay(ll_delayBetweenFlashes);
-
-      ll_paletteIndex += 16;
-    }
-
-    // TODO: Last flash should fade
-  }
-}
-// Run a dim white line
 // Save the white line
 // Flash the white line, brighter
 // Last flash should fade
+void lightningLine() {
+  // fill_gradient_RGB(leds, NUM_LEDS, ll_paletteIndex, 255 / NUM_LEDS, currentPalette, 255, LINEARBLEND);
+  ll_numberOfFlashes = random8(1, 6); // Determine number of flashes
 
-uint8_t flashOccurence = random8(1, 6);
+  // Run a dim white line
+  for (int y = 0; y <= NUM_LEDS; y++) {
+    FastLED.setBrightness(32 * y);
+    leds[y] = ColorFromPalette(currentPalette, ll_paletteIndex);
+    FastLED.show();
+    delay(NUM_LEDS / y + 12);
+  }
+
+  for (int z = 0; z <= ll_numberOfFlashes; z++) {
+    ll_delayBetweenFlashes = random8(z * 24);
+    ll_flashBrightness = random8(z * 36, 255);
+
+    fill_palette(leds, NUM_LEDS, ll_paletteIndex, z, currentPalette, ll_flashBrightness, LINEARBLEND);
+    FastLED.show();
+    delay(ll_delayBetweenFlashes);
+
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    FastLED.show();
+    delay(ll_delayBetweenFlashes);
+  }
+
+  // fill_solid(leds, NUM_LEDS, CRGB::Black);
+  // FastLED.show();
+
+  
+
+  // Randomly select an LED
+  // ll_flashLED = random8(NUM_LEDS - 1); // Lock the LED of choice
+  // ll_flashLED_length = random8(NUM_LEDS / 2);
+
+  // if (ll_flashLED < NUM_LEDS / 2) {
+    // If it's in the first half...      
+  // } else {
+    // If it's in the last half...
+  // }
+  
+}
+
+uint8_t ls_flashOccurence;
 
 void loop() {
+  // TODO: Select between lightning line || lightning flash
+  
+  // Lightning Flashes
+  ls_flashOccurence = random8(8);
 
-    EVERY_N_MILLISECONDS(random16(2048, 4096)) {
-      for (int x = 0; x <= flashOccurence; x++) {
-        lightningSpark_one();
-      }
+  EVERY_N_SECONDS(random16(24)) {
+    for (int x = 0; x <= ls_flashOccurence; x++) {
+      lightningSpark();
     }
-
-    // lightningLine();
-
-    // TODO: Select between lightning line || lightning flash
-
-    // #SAVE MOVING PALETTE FOR #2
-
-    // fill_palette(leds, NUM_LEDS, ls_paletteIndex, 255 / NUM_LEDS, myPal, 255, LINEARBLEND);
-    //   FastLED.show();
-
-    // EVERY_N_MILLISECONDS(32) {
-    // }
-
+  }
   
+  // Lightning Crawl
+  EVERY_N_SECONDS(random16(24)) {
+    lightningLine();
+  }
 
-    // leds[random8(0, NUM_LEDS - 1)] = ColorFromPalette(myPal, random8(), 255, LINEARBLEND);
+  EVERY_N_MILLISECONDS(1) {
+    ll_paletteIndex++;
+  }
 
-    // fadeToBlackBy(leds, NUM_LEDS, 50);
-
-  
+  fadeToBlackBy(leds, NUM_LEDS, 1);
 }
