@@ -23,23 +23,28 @@ DEFINE_GRADIENT_PALETTE( bhw1_06_gp ) {
 
 CRGBPalette16 currentPalette = bhw1_06_gp;
 
+/* TIMER */
+
+/* LIGHTING GENERAL CONTROLS */
 uint8_t ls_flashOccurence; // Number of flashes
 uint8_t chainLightning; // Chance of chain
 uint8_t lightningStrand; // Conduit selector
 
+/* ARDUINO SETUP */
 void setup() { 
     FastLED.addLeds<WS2812B, DATA_PIN_A, GRB>(leds_A, NUM_LEDS);
     FastLED.addLeds<WS2812B, DATA_PIN_B, GRB>(leds_B, NUM_LEDS);
     FastLED.setBrightness(BRIGHTNESS);
 }
 
+/* LIGHTNING SPARK SETTINGS */
 uint8_t ls_numberOfFlashes;
 uint8_t ls_delayBetweenFlashes;
 uint8_t ls_flashLED;
 uint8_t ls_flashBrightness;
 uint8_t ls_paletteIndex;
 
-// #A LIGHTNING SPARK
+/* #1 LIGHTNING SPARK */
 void lightningSpark() {
   lightningStrand = random8(12); // Which conduit
   ls_numberOfFlashes = random8(1, 4); // Determine number of flashes
@@ -87,7 +92,7 @@ uint8_t ll_flashLED_length;
 uint8_t ll_flashBrightness;
 uint8_t ll_paletteIndex;
 
-// #2 LIGHTNING LINE
+/* #2 LIGHTNING LINE */
 // TODO: Random direction and number of LEDs involved...
 // Randomly select an LED
 // ll_flashLED = random8(NUM_LEDS - 1); // Lock the LED of choice
@@ -147,7 +152,7 @@ void lightningLine() {
   }
 }
 
-// #3 LIGHTNING CRAWL
+/* #3 LIGHTNING CRAWL */
 void lightningCrawl() {
   lightningStrand = random8(12); // Which conduit
   chainLightning = random16(256);
@@ -181,9 +186,12 @@ void lightningCrawl() {
   }
 }
 
-void loop() {  
+uint8_t randomness = 24;
+
+void loop()
+{
   // Lightning Flashes
-  EVERY_N_SECONDS(random8(32)) { 
+  EVERY_N_SECONDS(random8(randomness * 1)) { 
     ls_flashOccurence = random8(8);
 
     for (int x = 0; x <= ls_flashOccurence; x++) {
@@ -192,12 +200,12 @@ void loop() {
   }
 
   // Lightning Crawl
-  EVERY_N_SECONDS(random8(32)) {
+  EVERY_N_SECONDS(random8(randomness * 2)) {
     lightningCrawl();
   }
   
   // Lightning Line
-  EVERY_N_SECONDS(random8(32)) {
+  EVERY_N_SECONDS(random8(randomness * 3)) {
     lightningLine();
   }
 
