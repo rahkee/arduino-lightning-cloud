@@ -57,7 +57,7 @@ void lightningSpark() {
     ls_delayBetweenFlashes = random(x * 4, 64);
     ls_flashBrightness = random(x * 25, BRIGHTNESS);
 
-    if (lightningStrand <= 6) {
+    if (lightningStrand < 6) {
       leds_A[ls_flashLED] = ColorFromPalette(currentPalette, ls_paletteIndex, ls_flashBrightness, LINEARBLEND);
       FastLED.show();
 
@@ -69,7 +69,7 @@ void lightningSpark() {
       delay(ls_delayBetweenFlashes);
     }
 
-    if (lightningStrand > 6) {
+    if (lightningStrand >= 6) {
       leds_B[ls_flashLED] = ColorFromPalette(currentPalette, ls_paletteIndex, ls_flashBrightness, LINEARBLEND);
       FastLED.show();
 
@@ -107,7 +107,7 @@ void lightningLine() {
   lightningStrand = random8(12); // Which conduit
   ll_numberOfFlashes = random8(1, 6); // Determine number of flashes
 
-  if (lightningStrand <= 6) {
+  if (lightningStrand < 6) {
     for (int y = 0; y < NUM_LEDS; y++) {
       FastLED.setBrightness(32 * y);
       leds_A[y] = ColorFromPalette(currentPalette, ll_paletteIndex);
@@ -129,7 +129,7 @@ void lightningLine() {
     }
   }
 
-  if (lightningStrand > 6) {
+  if (lightningStrand >= 6) {
     for (int y = 0; y < NUM_LEDS; y++) {
       FastLED.setBrightness(32 * y);
       leds_B[y] = ColorFromPalette(currentPalette, ll_paletteIndex);
@@ -157,7 +157,7 @@ void lightningCrawl() {
   lightningStrand = random8(12); // Which conduit
   chainLightning = random16(256);
 
-  if (lightningStrand <= 6) {
+  if (lightningStrand < 6) {
     for (int n = 0; n < NUM_LEDS; n++) {
       leds_A[n] = ColorFromPalette(currentPalette, ll_paletteIndex);
       FastLED.show();
@@ -168,7 +168,7 @@ void lightningCrawl() {
     }
   }
 
-  if (lightningStrand > 6) {
+  if (lightningStrand >= 6) {
     for (int n = 0; n < NUM_LEDS; n++) {
       leds_B[n] = ColorFromPalette(currentPalette, ll_paletteIndex);
       FastLED.show();
@@ -186,33 +186,48 @@ void lightningCrawl() {
   }
 }
 
-uint8_t randomness = 24;
+uint8_t randomness = 12;
+uint8_t timer = 0;
 
 void loop()
 {
-  // Lightning Flashes
-  EVERY_N_SECONDS(random8(randomness * 1)) { 
-    ls_flashOccurence = random8(8);
 
-    for (int x = 0; x <= ls_flashOccurence; x++) {
-      lightningSpark();
+  // TIMER
+  EVERY_N_HOURS(1) {
+
+    if (timer == 24) {
+      timer = 0;
     }
+
+    timer++;
   }
 
-  // Lightning Crawl
-  EVERY_N_SECONDS(random8(randomness * 2)) {
-    lightningCrawl();
-  }
-  
-  // Lightning Line
-  EVERY_N_SECONDS(random8(randomness * 3)) {
-    lightningLine();
-  }
+  if (timer <= 8) {
+    // Lightning Flashes
+      EVERY_N_SECONDS(random8(randomness * 2)) { 
+        ls_flashOccurence = random8(8);
 
-  EVERY_N_MILLISECONDS(10) {
-    ll_paletteIndex++;
+        for (int x = 0; x <= ls_flashOccurence; x++) {
+          lightningSpark();
+        }
+      }
+
+      // Lightning Crawl
+      EVERY_N_SECONDS(random8(randomness * 4)) {
+        lightningCrawl();
+      }
+      
+      // Lightning Line
+      EVERY_N_SECONDS(random8(randomness * 6)) {
+        lightningLine();
+      }
+
+      EVERY_N_MILLISECONDS(10) {
+        ll_paletteIndex++;
+      }
+      
+      // Reset strands to black
+      fadeToBlackBy(leds_A, NUM_LEDS, 24);
+      fadeToBlackBy(leds_B, NUM_LEDS, 24);
   }
-  
-  fadeToBlackBy(leds_A, NUM_LEDS, 12);
-  fadeToBlackBy(leds_B, NUM_LEDS, 12);
 }
