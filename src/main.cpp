@@ -47,7 +47,7 @@ uint8_t ls_paletteIndex;
 /* #1 LIGHTNING SPARK */
 void lightningSpark() {
   lightningStrand = random8(12); // Which conduit
-  ls_numberOfFlashes = random8(1, 4); // Determine number of flashes
+  ls_numberOfFlashes = random8(8); // Determine number of flashes
   // Randomly select an LED || Group of LEDs in the strip
   ls_flashLED = random8(0, NUM_LEDS - 1); // Lock the LED of choice
 
@@ -105,7 +105,7 @@ uint8_t ll_paletteIndex;
 // }
 void lightningLine() {
   lightningStrand = random8(12); // Which conduit
-  ll_numberOfFlashes = random8(1, 6); // Determine number of flashes
+  ll_numberOfFlashes = random8(8); // Determine number of flashes
 
   if (lightningStrand < 6) {
     for (int y = 0; y < NUM_LEDS; y++) {
@@ -202,7 +202,7 @@ void loop()
     timer++;
   }
 
-  if (timer <= 8) {
+  // if (timer <= 8) {
     // Lightning Flashes
       EVERY_N_SECONDS(random8(randomness * 2)) { 
         ls_flashOccurence = random8(8);
@@ -229,5 +229,5 @@ void loop()
       // Reset strands to black
       fadeToBlackBy(leds_A, NUM_LEDS, 24);
       fadeToBlackBy(leds_B, NUM_LEDS, 24);
-  }
+  // }
 }
